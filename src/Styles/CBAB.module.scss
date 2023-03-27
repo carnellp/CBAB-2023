@@ -1,0 +1,337 @@
+$mainPadding: 1rem;
+$halfPadding: calc($mainPadding/2);
+$darkBlue: #202230;
+$lightBlue: #488090;
+$yellow: #febd45;
+$orange: #e47317;
+$grey: #9a9c9e;
+$activeFilter: #e7eaed;
+
+.screenContainer {
+  flex: 1;
+  background-color: $darkBlue;
+}
+
+.justifyCenter {
+  flex: 1;
+  justify-content: center;
+}
+
+.navContainer {
+  padding: 1rem 1.5rem;
+  flex-direction: row;
+  background-color: $darkBlue;
+  justify-content: space-between;
+  height: 80px;
+}
+
+.burgerContainer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 70%;
+  height: 100%;
+  background-color: $lightBlue;
+}
+
+.loadingContainer {
+  margin: $mainPadding;
+}
+.leftIndent {
+  padding: 0 0 0 1.5rem;
+}
+
+.burgerItemContainer,
+.articleListItemContainer {
+  border-bottom-color: $grey;
+  border-bottom-width: 2;
+}
+
+.burgerItemBtn,
+.articleListItemBtn {
+  padding: 1.2rem $halfPadding;
+}
+
+.articleListItemBtn {
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.burgerItemText,
+.articleListTitle,
+.nextBtn {
+  color: #ffffff;
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+.burgerLine {
+  background-color: #488090;
+  width: 30px;
+  height: 3px;
+  margin-top: 6;
+}
+
+.headerTitle {
+  color: #ffffff;
+  font-weight: bold;
+  font-size: 1.5rem;
+}
+.marginBottom {
+  margin-bottom: $mainPadding;
+}
+
+.bodyCont {
+  flex: 1;
+  padding: $mainPadding;
+}
+
+.bpCont {
+  flex: 1;
+  background-color: #ffffff;
+  padding: $halfPadding;
+}
+
+.homeCont {
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.homeBox {
+  width: 50%;
+  margin-bottom: $mainPadding;
+}
+
+.leftCol {
+  padding-right: $halfPadding;
+}
+
+.rightCol {
+  padding-left: $halfPadding;
+}
+
+.boxImage {
+  width: 100%;
+  height: 150;
+}
+
+.articleTypeBox {
+  width: 100%;
+  flex: 1;
+}
+
+.boxText {
+  color: #ffffff;
+  padding: 0.7rem;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.boxGradient {
+  top: -1;
+}
+
+.boxBlue {
+  background-color: $lightBlue;
+}
+
+.boxYellow {
+  background-color: $yellow;
+}
+
+.boxOrange {
+  background-color: $orange;
+}
+
+.articleImage {
+  width: 100%;
+  height: 300px;
+}
+
+.articleCont {
+  flex: 1;
+  padding: 0 $mainPadding;
+  color: #000000;
+}
+
+.articleHeading {
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.divider {
+  margin-left: $mainPadding;
+  border-bottom-width: 1px;
+  border-bottom-color: $grey;
+}
+
+.articleBack {
+  background-color: $grey;
+  align-items: center;
+  padding: $halfPadding $mainPadding;
+}
+
+.articleNext {
+  flex-direction: row;
+  align-items: center;
+  padding: $halfPadding $mainPadding;
+  justify-content: flex-end;
+}
+
+.bpFooterCont {
+  flex-direction: row;
+  background-color: #000000;
+  justify-content: space-between;
+  padding: $mainPadding 1.5rem;
+  align-items: center;
+}
+
+.bpFooterText {
+  font-size: 1.2rem;
+  color: #ffffff;
+}
+
+.uploadInputField {
+  padding-bottom: $mainPadding;
+  margin-bottom: 1.3rem;
+  border-bottom-color: '#000000';
+  border-bottom-width: 1px;
+}
+.defaultUploadImgCont {
+  width: 150;
+  height: 150;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  border-radius: $halfPadding;
+  background-color: #000000;
+}
+
+.filterCont {
+  padding: 0.1rem $mainPadding;
+  flex: 1;
+}
+.uploadImgCont {
+  padding: 0;
+}
+.defaultUploadImg {
+  width: 50px;
+  height: 50px;
+}
+
+.uploadImg {
+  width: 150px;
+  height: 150px;
+}
+
+.uploadDescription {
+  margin-left: $halfPadding;
+}
+
+.inputLabel {
+  font-weight: bold;
+  font-size: 15px;
+  margin-bottom: 0.7rem;
+}
+
+.dropdown,
+.filterDropdown {
+  padding: 0.25rem 0.75rem;
+  border-color: black;
+  border-width: 1px;
+}
+
+.filterDropdown {
+  margin-top: $mainPadding;
+}
+
+.placeholderStyle {
+  padding: 0;
+  margin: 0;
+  color: $grey;
+}
+
+.selectedTextStyle {
+  color: #000000;
+}
+
+.textInput {
+  font-size: 1rem;
+}
+
+.sortByCont {
+  flex-direction: row;
+  background-color: $grey;
+  padding: $halfPadding $mainPadding;
+}
+.sortFilterBtn {
+  justify-content: center;
+  padding: $halfPadding $mainPadding;
+  height: 2.5rem;
+  border-color: $darkBlue;
+  border-width: 1px;
+  background-color: #ffffff;
+}
+
+.sortFilterText {
+  font-size: 1rem;
+}
+
+.active {
+  color: #ffffff;
+  background-color: $darkBlue;
+}
+
+.uploadSubmitCont {
+  flex-direction: row;
+  padding: $mainPadding;
+}
+
+.uploadIcon {
+  margin-left: $halfPadding;
+  width: 30px;
+  height: 30px;
+}
+
+.filterBtnRow {
+  margin-top: $mainPadding;
+  flex: 1;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.filterBtn {
+  padding: $mainPadding;
+  justify-content: center;
+  align-items: center;
+}
+
+.filterBtnText {
+  color: #ffffff;
+  font-weight: bold;
+}
+// OLD
+// .bodyCont {
+//   flex-direction: row;
+//   flex-wrap: wrap;
+//   padding: 15px;
+// }
+
+// .box {
+//   flex-basis: 50%;
+//   margin-bottom: 15px;
+// }
+
+// .left {
+//   padding-right: 7.5px;
+// }
+
+// .right {
+//   padding-left: 7.5px;
+// }
+
+// .inputLabel {
+//   font-weight: bold;
+//   font-size: 15px;
+//   margin-bottom: 0.7rem;
+// }
