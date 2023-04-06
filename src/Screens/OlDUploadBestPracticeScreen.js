@@ -22,7 +22,6 @@ import styles from '../Styles/CBAB.module';
 import headingImg from '../assets/headingBestBG.png';
 import uploadIcon from '../assets/upload.png';
 import cameraIcon from '../assets/camera.png';
-import {Buffer} from "buffer";
 //import RNFetchBlob from "rn-fetch-blob";
 //var RNFS = require('react-native-fs');
 
@@ -45,7 +44,7 @@ export default function UploadBestPracticeScreen({navigation}) {
   const [buData, setBuData] = useState([]);
   const [toolsData, setToolsData] = useState([]);
   const [detailsData, setDetailsData] = useState([]);
-  const [image, setImage] = useState('/assets/camera.png');
+  const [image, setImage] = useState('/assets/camera.jpg');
 
   const [readFile, setReadFile] = useState(null);
 
@@ -88,15 +87,41 @@ export default function UploadBestPracticeScreen({navigation}) {
   const [filename, setFilename] = useState('');
   const [contentType, setContentType] = useState('');
 
-  const handleSubmit = () => uploadImage();
+
+  const handleSubmit = () => {
+    // console.log('submit');
+    // console.log('Description:' + description);
+    // console.log('Name:' + name);
+    // console.log('Title:' + title);
+    // console.log('Email:' + email);
+    // console.log('BU:' + businessUnitValue);
+    // console.log('Tool:' + toolsValue);
+    // console.log('Detail:' + detailValue);
+    console.log(image);
+
+    if (imageType == 'camera'){
+      setPath(image.url);
+      setFilename(image.name);
+      setContentType(image.type);
+    } else {
+      setPath(image.sourceURL);
+      setFilename(image.filename);
+      setContentType(image.mime);
+    }
+
+    console.log(path)
+
+   // uploadImage(path, filename, contentType);
+  };
 
   const fromLibrary = () => {
     ImagePicker.openPicker({
       width: 300,
       height: 400,
-      includeBase64: true,
+      includeBase64: 'false',
       cropping: true,
-    }).then(async (image) => {
+    }).then(image => {
+      // console.log(image);
       setImage(image);
       setImageType('library');
     });
@@ -106,130 +131,141 @@ export default function UploadBestPracticeScreen({navigation}) {
     ImagePicker.openCamera({
       width: 300,
       height: 400,
-      includeBase64: true,
+      includeBase64: 'false',
       cropping: true,
     }).then(image => {
+    //  console.log(image);
       setImage(image);
       setImageType('camera');
     });
   };
-  const uploadImage = async () => {
-    const imageBuffer = Buffer.from(image.data, 'base64');
-    const fileName = image.path.split("/").at(-1)
-    const contentType = image.mime;
 
-    const upload = await client.getSpace("kst95g92kfwh")
-      .then((space) => space.getEnvironment('master'))
-      .then((env) => env.createUpload({
-          file: imageBuffer,
-          contentType: contentType,
-          fileName: fileName,
-        })
-      )
-      .then((upload) => upload)
+  const fetchResourceFromURI = async uri => {
+    const response = await fetch(uri);
+    console.log(response);
+    const blob = await response.blob();
+    return blob;
+  };
 
-    await client.getSpace("kst95g92kfwh")
-      .then((space) => space.getEnvironment('master'))
-      .then((env) => {
-        env.createAsset({
-            fields: {
-              title: {
-                'en-US': title
+  const uploadImage = async (path, filename, contentType) => {
+    const img = await fetchResourceFromURI(path);
+    // Create asset
+    client
+      .getSpace('kst95g92kfwh')
+      .then(space => space.getEnvironment('master'))
+      .then(environment =>
+        environment
+          .createUpload({
+            file: img,
+            contentType: contentType,
+            fileName: filename,
+          })
+          .then(upload => {
+            return environment.createAsset({
+              sys: {
+                contentType: {
+                  sys: {
+                    type: 'Link',
+                    linkType: 'ContentType',
+                    id: upload.sys.id,
+                  },
+                },
               },
-              file: {
-                'en-US': {
-                  fileName: fileName,
-                  contentType: contentType,
-                  uploadFrom: {
-                    sys: {
-                      type: 'Link',
-                      linkType: 'Upload',
-                      id: upload.sys.id
+              fields: {
+                title: {
+                  'en-US': filename,
+                },
+                file: {
+                  'en-US': {
+                    fileName: filename,
+                    contentType: contentType,
+                    uploadFrom: {
+                      sys: {
+                        type: 'Link',
+                        linkType: 'Upload',
+                        id: upload.sys.id,
+                      },
                     },
                   },
                 },
               },
-            },
-          })
-          .then((asset) => {
-            return asset.processForAllLocales({processingCheckWait: 2000})
-          })
-          .then((asset) => {
-            return asset.publish()
-          })
-          .then((asset) => {
-            client
-              .getSpace('kst95g92kfwh')
-              .then(sp => sp.getEnvironment('master'))
-              .then(env => {
-                const entry = {
-                  fields: {
-                    photo: {
-                      'en-US': {
-                        sys: {
-                          id: asset.sys.id,
-                          linkType: 'Asset',
-                          type: 'Link',
-                        },
-                      },
-                    },
-                    title: {
-                      'en-US': title,
-                    },
-                    author: {
-                      'en-US': name,
-                    },
-                    authorEmail: {
-                      'en-US': email,
-                    },
-                    comments: {
-                      'en-US': description,
+            });
+          }),
+      )
+      .then(asset => asset.processForAllLocales())
+      .then(asset => asset.publish())
+      .then(asset => {
+        client
+          .getSpace('kst95g92kfwh')
+          .then(sp => sp.getEnvironment('master'))
+          .then(env => {
+            const entry = {
+              fields: {
+                photo: {
+                  'en-US': {
+                    sys: {
+                      id: asset.sys.id,
+                      linkType: 'Asset',
+                      type: 'Link',
                     },
                   },
-                };
-                if (businessUnitValue) {
-                  entry.fields.businessUnit = {
-                    'en-US': {
-                      sys: {
-                        id: businessUnitValue,
-                        type: 'Link',
-                        linkType: 'Entry',
-                      },
-                    },
-                  };
-                }
-                if (toolsValue) {
-                  entry.fields.toolsType = {
-                    'en-US': {
-                      sys: {
-                        id: toolsValue,
-                        type: 'Link',
-                        linkType: 'Entry',
-                      },
-                    },
-                  };
-                }
-                if (detailValue) {
-                  entry.fields.detailType = {
-                    'en-US': {
-                      sys: {
-                        id: detailValue,
-                        type: 'Link',
-                        linkType: 'Entry',
-                      },
-                    },
-                  };
-                }
-                env
-                  .createEntry('bestPractice', entry)
-                  .then(entry => entry.publish())
-                  .then(entry => console.log(entry))
-                  .catch(console.error);
-              })
+                },
+                title: {
+                  'en-US': title,
+                },
+                author: {
+                  'en-US': name,
+                },
+                authorEmail: {
+                  'en-US': email,
+                },
+                comments: {
+                  'en-US': description,
+                },
+              },
+            };
+            if (businessUnitValue) {
+              entry.fields.businessUnit = {
+                'en-US': {
+                  sys: {
+                    id: businessUnitValue,
+                    type: 'Link',
+                    linkType: 'Entry',
+                  },
+                },
+              };
+            }
+            if (toolsValue) {
+              entry.fields.toolsType = {
+                'en-US': {
+                  sys: {
+                    id: toolsValue,
+                    type: 'Link',
+                    linkType: 'Entry',
+                  },
+                },
+              };
+            }
+            if (detailValue) {
+              entry.fields.detailType = {
+                'en-US': {
+                  sys: {
+                    id: detailValue,
+                    type: 'Link',
+                    linkType: 'Entry',
+                  },
+                },
+              };
+            }
+            env
+              .createEntry('bestPractice', entry)
+              .then(entry => entry.publish())
+              .then(entry => console.log(entry))
               .catch(console.error);
           })
+          .catch(console.error);
       })
-      .catch(console.error)
+      .catch(console.error);
 
     navigation.navigate('BestPracticeScreen');
   };
@@ -253,23 +289,41 @@ export default function UploadBestPracticeScreen({navigation}) {
         <Header title="Upload your best practice" image="orange" />
         <ScrollView style={{flex: 1}}>
           <View style={[styles.bodyCont, {backgroundColor: '#ffffff'}]}>
-            <View 
-              style={[styles.uploadInputField, {flexDirection: 'row', paddingBottom: 0},]} >
-              <TouchableOpacity 
-              style={image == '/assets/camera.png' ? styles.defaultUploadImgCont : styles.uploadImgCont} onPress={handlePictureOption}>
+            <View
+              style={[
+                styles.uploadInputField,
+                {flexDirection: 'row', paddingBottom: 0},
+              ]}>
+              <TouchableOpacity
+                style={
+                  image == '/assets/camera.jpg'
+                    ? styles.defaultUploadImgCont
+                    : styles.uploadImgCont
+                }
+                onPress={handlePictureOption}>
                 <Image
                   source={
-                    image == '/assets/camera.png' ? cameraIcon : {uri: image.sourceURL}
+                    image == '/assets/camera.jpg'
+                      ? cameraIcon
+                      : {uri: image.sourceURL}
                   }
                   resizeMode={
-                   image == '/assets/camera.png' ? 'contain' : 'cover'
+                    image == '/assets/camera.jpg' ? 'contain' : 'cover'
                   }
                   style={
-                    image == '/assets/camera.png' ? styles.defaultUploadImg : styles.uploadImg
+                    image == '/assets/camera.jpg'
+                      ? styles.defaultUploadImg
+                      : styles.uploadImg
                   }
                 />
               </TouchableOpacity>
-              <TextInput style={[styles.uploadDescription, {flex: 1}]} value={description} onChangeText={setDescription} placeholder="Add description"                       multiline={true} />
+              <TextInput
+                style={[styles.uploadDescription, {flex: 1}]}
+                value={description}
+                onChangeText={setDescription}
+                placeholder="Add description"
+                multiline={true}
+              />
             </View>
             <View style={styles.uploadInputField}>
               <Text style={styles.inputLabel}>Name</Text>

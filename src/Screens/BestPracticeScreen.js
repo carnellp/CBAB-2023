@@ -197,13 +197,13 @@ export default function BestPracticeScreen({navigation}) {
           </View>
         </View>
 
-        {/* <TouchableOpacity
+        <TouchableOpacity
           style={styles.bpFooterCont}
           onPress={handlePress}
           activeOpacity={0.5}>
           <Text style={styles.bpFooterText}>Upload your best practice</Text>
           <Image source={cameraIcon} />
-        </TouchableOpacity> */}
+        </TouchableOpacity>
       </SafeAreaView>
     </View>
   );
