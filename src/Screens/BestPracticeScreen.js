@@ -44,7 +44,7 @@ export default function BestPracticeScreen({navigation}) {
       url: 'https://cdn.contentful.com/spaces/kst95g92kfwh/environments/master/entries?access_token=1833b658c22f833fc1c5b37e52ce3dd31eb8a25ef1d1094154346499ad566e50&content_type=bestPractice',
     }).then(response => {
       setBestPractices(response.data.items);
-      console.log(response.data.items[1]);
+     // console.log(response.data.items[1]);
       setIsLoading(false);
     });
   }, [selectedBUFilter, selectedToolsFilter, selectedDetailsFilter]);

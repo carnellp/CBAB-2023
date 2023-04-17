@@ -55,7 +55,7 @@ function App(): JSX.Element {
           name="BestPracticeItemScreen"
           component={BestPracticeItemScreen}
         />
-             <Stack.Screen
+        <Stack.Screen
           name="UploadBestPracticeScreen"
           component={UploadBestPracticeScreen}
         />

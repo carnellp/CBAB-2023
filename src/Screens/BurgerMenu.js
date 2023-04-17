@@ -29,16 +29,16 @@ export default function BurgerMenu({
     },
   ];
 
-  // const uploadBestPractices = [
-  //   {
-  //     fields: {title: 'Upload Best Practices'},
-  //     sys: {
-  //       id: '0002',
-  //       contentType: {sys: {id: 'bestPractice'}},
-  //       componentName: 'UploadBestPracticeScreen',
-  //     },
-  //   },
-  // ];
+  const uploadBestPractices = [
+    {
+      fields: {title: 'Upload Best Practices'},
+      sys: {
+        id: '0002',
+        contentType: {sys: {id: 'bestPractice'}},
+        componentName: 'UploadBestPracticeScreen',
+      },
+    },
+  ];
 
   useEffect(() => {
     if (pages.length > 1) {
@@ -54,6 +54,9 @@ export default function BurgerMenu({
         })
         .then(response => {
           setPages(current => [...current, ...sharingBestPractices]);
+        })
+        .then(response => {
+          setPages(current => [...current, ...uploadBestPractices]);
         })
         .then(response => {
           axios({

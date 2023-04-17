@@ -1,5 +1,6 @@
 import {
   Alert,
+  ActivityIndicator,
   Image,
   ImageBackground,
   SafeAreaView,
@@ -22,7 +23,7 @@ import styles from '../Styles/CBAB.module';
 import headingImg from '../assets/headingBestBG.png';
 import uploadIcon from '../assets/upload.png';
 import cameraIcon from '../assets/camera.png';
-import {Buffer} from "buffer";
+import {Buffer} from 'buffer';
 //import RNFetchBlob from "rn-fetch-blob";
 //var RNFS = require('react-native-fs');
 
@@ -46,6 +47,17 @@ export default function UploadBestPracticeScreen({navigation}) {
   const [toolsData, setToolsData] = useState([]);
   const [detailsData, setDetailsData] = useState([]);
   const [image, setImage] = useState('/assets/camera.png');
+
+  const [descError, setDescError] = useState('');
+  const [emailError, setEmailError] = useState('');
+  const [titleError, setTitleError] = useState('');
+  const [nameError, setNameError] = useState('');
+  const [imageError, setImageError] = useState('');
+  const [buError, setBuError] = useState('');
+  const [toolsError, setToolsError] = useState('');
+  const [detailsError, setDetailsError] = useState('');
+
+  const [isLoading, setLoading] = useState(false);
 
   const [readFile, setReadFile] = useState(null);
 
@@ -88,7 +100,112 @@ export default function UploadBestPracticeScreen({navigation}) {
   const [filename, setFilename] = useState('');
   const [contentType, setContentType] = useState('');
 
-  const handleSubmit = () => uploadImage();
+  const handleSubmit = () => {
+    setLoading(true);
+
+    var buValid = false;
+    if (businessUnitValue === undefined || businessUnitValue === null) {
+      setBuError('Please select a Business unit');
+    } else {
+      setBuError('');
+      buValid = true;
+    }
+    var toolsValid = false;
+    if (toolsValue === undefined || toolsValue === null) {
+      setToolsError('Please select a value');
+    } else {
+      setToolsError('');
+      toolsValid = true;
+    }
+    var detailsValid = false;
+    if (detailValue === undefined || detailValue === null) {
+      setDetailsError('Please select a value');
+    } else {
+      setDetailsError('');
+      detailsValid = true;
+    }
+
+    var imageValid = false;
+    if (image == '/assets/camera.png') {
+      setImageError('An image is required');
+    } else {
+      setImageError('');
+      imageValid = true;
+    }
+
+    var emailValid = false;
+    if (email.length == 0) {
+      setEmailError('Email is required');
+    } else if (email.length < 3) {
+      setEmailError('Email should be minimum 6 characters');
+    } else if (email.indexOf(' ') >= 0) {
+      setEmailError('Email cannot contain spaces');
+    } else {
+      let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/;
+      if (reg.test(email) === false) {
+        setEmailError('Email format is not correct');
+        return false;
+      } else {
+        setEmailError('');
+        emailValid = true;
+      }
+    }
+
+    var titleValid = false;
+    if (title.length == 0) {
+      setTitleError('Title is required');
+    } else if (title.length < 3) {
+      setTitleError('Title should be minimum 3 characters');
+    } else {
+      setTitleError('');
+      titleValid = true;
+    }
+
+    var descValid = false;
+    if (description.length == 0) {
+      setDescError('Description is required');
+    } else if (description.length < 6) {
+      setDescError('Enter 6 characters minimum');
+    } else {
+      setDescError('');
+      descValid = true;
+    }
+
+    var nameValid = false;
+    if (name.length == 0) {
+      setNameError('Name is required');
+    } else if (name.length < 3) {
+      setNameError('Name should be minimum 3 characters');
+    } else {
+      setNameError('');
+      nameValid = true;
+    }
+    if (
+      emailValid &&
+      nameValid &&
+      titleValid &&
+      descValid &&
+      imageValid &&
+      buValid &&
+      detailsValid &&
+      toolsValid
+    ) {
+      console.log('success');
+
+      setEmail('');
+      setName('');
+      setTitle('');
+      setDescription('');
+      setBusinessUnitValue(null);
+      setToolsValue(null);
+      setDetailValue(null);
+
+      setLoading(true);
+      uploadImage();
+
+      setImage('/assets/camera.png');
+    }
+  };
 
   const fromLibrary = () => {
     ImagePicker.openPicker({
@@ -96,7 +213,7 @@ export default function UploadBestPracticeScreen({navigation}) {
       height: 400,
       includeBase64: true,
       cropping: true,
-    }).then(async (image) => {
+    }).then(async image => {
       setImage(image);
       setImageType('library');
     });
@@ -109,32 +226,37 @@ export default function UploadBestPracticeScreen({navigation}) {
       includeBase64: true,
       cropping: true,
     }).then(image => {
+      //console.log(image)
       setImage(image);
       setImageType('camera');
     });
   };
   const uploadImage = async () => {
     const imageBuffer = Buffer.from(image.data, 'base64');
-    const fileName = image.path.split("/").at(-1)
+    const fileName = image.path.split('/').at(-1);
     const contentType = image.mime;
 
-    const upload = await client.getSpace("kst95g92kfwh")
-      .then((space) => space.getEnvironment('master'))
-      .then((env) => env.createUpload({
+    const upload = await client
+      .getSpace('kst95g92kfwh')
+      .then(space => space.getEnvironment('master'))
+      .then(env =>
+        env.createUpload({
           file: imageBuffer,
           contentType: contentType,
           fileName: fileName,
-        })
+        }),
       )
-      .then((upload) => upload)
+      .then(upload => upload);
 
-    await client.getSpace("kst95g92kfwh")
-      .then((space) => space.getEnvironment('master'))
-      .then((env) => {
-        env.createAsset({
+    await client
+      .getSpace('kst95g92kfwh')
+      .then(space => space.getEnvironment('master'))
+      .then(env => {
+        env
+          .createAsset({
             fields: {
               title: {
-                'en-US': title
+                'en-US': title,
               },
               file: {
                 'en-US': {
@@ -144,20 +266,20 @@ export default function UploadBestPracticeScreen({navigation}) {
                     sys: {
                       type: 'Link',
                       linkType: 'Upload',
-                      id: upload.sys.id
+                      id: upload.sys.id,
                     },
                   },
                 },
               },
             },
           })
-          .then((asset) => {
-            return asset.processForAllLocales({processingCheckWait: 2000})
+          .then(asset => {
+            return asset.processForAllLocales({processingCheckWait: 2000});
           })
-          .then((asset) => {
-            return asset.publish()
+          .then(asset => {
+            return asset.publish();
           })
-          .then((asset) => {
+          .then(asset => {
             client
               .getSpace('kst95g92kfwh')
               .then(sp => sp.getEnvironment('master'))
@@ -223,15 +345,17 @@ export default function UploadBestPracticeScreen({navigation}) {
                 env
                   .createEntry('bestPractice', entry)
                   .then(entry => entry.publish())
-                  .then(entry => console.log(entry))
+                  .then(entry => {
+                    //console.log(entry)
+                    navigation.push('BestPracticeScreen');
+                    setLoading(false);
+                  })
                   .catch(console.error);
               })
               .catch(console.error);
-          })
+          });
       })
-      .catch(console.error)
-
-    navigation.navigate('BestPracticeScreen');
+      .catch(console.error);
   };
 
   const handlePictureOption = () => {
@@ -253,26 +377,53 @@ export default function UploadBestPracticeScreen({navigation}) {
         <Header title="Upload your best practice" image="orange" />
         <ScrollView style={{flex: 1}}>
           <View style={[styles.bodyCont, {backgroundColor: '#ffffff'}]}>
-            <View 
-              style={[styles.uploadInputField, {flexDirection: 'row', paddingBottom: 0},]} >
-              <TouchableOpacity 
-              style={image == '/assets/camera.png' ? styles.defaultUploadImgCont : styles.uploadImgCont} onPress={handlePictureOption}>
+            <View
+              style={[
+                styles.uploadInputField,
+                {flexDirection: 'row', paddingBottom: 0},
+              ]}>
+              <TouchableOpacity
+                style={
+                  image == '/assets/camera.png'
+                    ? styles.defaultUploadImgCont
+                    : styles.uploadImgCont
+                }
+                onPress={handlePictureOption}>
                 <Image
                   source={
-                    image == '/assets/camera.png' ? cameraIcon : {uri: image.sourceURL}
+                    image == '/assets/camera.png'
+                      ? cameraIcon
+                      : {uri: image.path}
                   }
                   resizeMode={
-                   image == '/assets/camera.png' ? 'contain' : 'cover'
+                    image == '/assets/camera.png' ? 'contain' : 'cover'
                   }
                   style={
-                    image == '/assets/camera.png' ? styles.defaultUploadImg : styles.uploadImg
+                    image == '/assets/camera.png'
+                      ? styles.defaultUploadImg
+                      : styles.uploadImg
                   }
                 />
+                {imageError.length > 0 && (
+                  <Text style={{color: 'red'}}>{imageError}</Text>
+                )}
               </TouchableOpacity>
-              <TextInput style={[styles.uploadDescription, {flex: 1}]} value={description} onChangeText={setDescription} placeholder="Add description"                       multiline={true} />
+              <TextInput
+                style={[styles.uploadDescription, {flex: 1}]}
+                value={description}
+                onChangeText={setDescription}
+                placeholder="Add description"
+                multiline={true}
+              />
+              {descError.length > 0 && (
+                <Text style={{color: 'red'}}>{descError}</Text>
+              )}
             </View>
             <View style={styles.uploadInputField}>
               <Text style={styles.inputLabel}>Name</Text>
+              {nameError.length > 0 && (
+                <Text style={{color: 'red'}}>{nameError}</Text>
+              )}
               <TextInput
                 value={name}
                 style={styles.textInput}
@@ -282,6 +433,9 @@ export default function UploadBestPracticeScreen({navigation}) {
             </View>
             <View style={styles.uploadInputField}>
               <Text style={styles.inputLabel}>Title</Text>
+              {titleError.length > 0 && (
+                <Text style={{color: 'red'}}>{titleError}</Text>
+              )}
               <TextInput
                 value={title}
                 style={styles.textInput}
@@ -289,8 +443,12 @@ export default function UploadBestPracticeScreen({navigation}) {
                 placeholder="Enter title"
               />
             </View>
+
             <View style={styles.uploadInputField}>
               <Text style={styles.inputLabel}>Email</Text>
+              {emailError.length > 0 && (
+                <Text style={{color: 'red'}}>{emailError}</Text>
+              )}
               <TextInput
                 value={email}
                 style={styles.textInput}
@@ -298,8 +456,12 @@ export default function UploadBestPracticeScreen({navigation}) {
                 placeholder="Enter email"
               />
             </View>
+
             <View style={styles.uploadInputField}>
               <Text style={styles.inputLabel}>Business Unit</Text>
+              {buError.length > 0 && (
+                <Text style={{color: 'red'}}>{buError}</Text>
+              )}
               <Dropdown
                 data={buData}
                 style={styles.dropdown}
@@ -316,6 +478,9 @@ export default function UploadBestPracticeScreen({navigation}) {
             </View>
             <View style={styles.uploadInputField}>
               <Text style={styles.inputLabel}>Tools</Text>
+              {toolsError.length > 0 && (
+                <Text style={{color: 'red'}}>{toolsError}</Text>
+              )}
               <Dropdown
                 data={toolsData}
                 style={styles.dropdown}
@@ -332,6 +497,9 @@ export default function UploadBestPracticeScreen({navigation}) {
             </View>
             <View style={styles.uploadInputField}>
               <Text style={styles.inputLabel}>Detail</Text>
+              {detailsError.length > 0 && (
+                <Text style={{color: 'red'}}>{detailsError}</Text>
+              )}
               <Dropdown
                 data={detailsData}
                 style={styles.dropdown}
@@ -361,6 +529,13 @@ export default function UploadBestPracticeScreen({navigation}) {
             </TouchableOpacity>
           </View>
         </ScrollView>
+        <View style={isLoading ? styles.loadingContainer : {display: 'none'}}>
+          <ActivityIndicator
+            animating={isLoading}
+            size="large"
+            color="#ffffff"
+          />
+        </View>
       </SafeAreaView>
     </View>
   );
