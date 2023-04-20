@@ -17,7 +17,7 @@ import Header from '../Components/Header';
 import NavBar from '../Components/NavBar';
 import styles from '../Styles/CBAB.module';
 import bgImage from '../assets/navyBG.jpg';
-import footerImg from '../assets/challengingBeliefs.png';
+import footerImg from '../assets/updated-footer.png';
 
 export default function ArticleTypeScreen({navigation, route}) {
   const [isLoading, setIsLoading] = useState(true);
