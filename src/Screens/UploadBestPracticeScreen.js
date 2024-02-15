@@ -432,7 +432,7 @@ export default function UploadBestPracticeScreen({navigation}) {
               />
             </View>
             <View style={styles.uploadInputField}>
-              <Text style={styles.inputLabel}>Title</Text>
+              <Text style={styles.inputLabel}>Best Practice Description</Text>
               {titleError.length > 0 && (
                 <Text style={{color: 'red'}}>{titleError}</Text>
               )}
@@ -440,7 +440,7 @@ export default function UploadBestPracticeScreen({navigation}) {
                 value={title}
                 style={styles.textInput}
                 onChangeText={setTitle}
-                placeholder="Enter title"
+                placeholder="Enter best practice description"
               />
             </View>
 
