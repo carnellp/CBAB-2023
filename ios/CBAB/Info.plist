@@ -36,11 +36,11 @@
 		</dict>
 	</dict>
 	<key>NSCameraUsageDescription</key>
-	<string>Allow access to camera to take a photo and upload</string>
+	<string>Allow access to the camera so you can take photos of CBAB best practice examples and upload to the app.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string></string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Allow access to photo library to upload</string>
+	<string>Allow access to the photo library so you can select photos of CBAB best practice examples and upload to the app.</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIRequiredDeviceCapabilities</key>
